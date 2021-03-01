@@ -1535,13 +1535,6 @@ final class PolyglotEngineImpl extends AbstractPolyglotImpl.AbstractEngineImpl i
 
     }
 
-    /*
-     * Used in safepoint tests.
-     */
-    static ThreadDeath createTestCancelExecution() {
-        return new CancelExecution(null, "", false);
-    }
-
     @ExportLibrary(InteropLibrary.class)
     static final class InterruptExecution extends AbstractTruffleException {
 
