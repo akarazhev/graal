@@ -679,7 +679,7 @@ final class PolyglotContextImpl extends AbstractContextImpl implements com.oracl
     }
 
     @TruffleBoundary
-    PolyglotThreadInfo leaveThreadChanged(PolyglotContextImpl prev) {
+    PolyglotThreadInfo leaveThreadChanged(PolyglotContextImpl prev, boolean entered) {
         PolyglotThreadInfo info;
         synchronized (this) {
             Thread current = Thread.currentThread();
@@ -688,14 +688,17 @@ final class PolyglotContextImpl extends AbstractContextImpl implements com.oracl
             PolyglotThreadInfo threadInfo = threads.get(current);
             assert threadInfo != null;
             info = threadInfo;
+
             if (cancelling && info.isLastActive()) {
                 notifyThreadClosed();
             }
 
-            try {
-                info.notifyLeave(engine, this);
-            } finally {
-                info.leaveInternal(prev);
+            if (entered) {
+                try {
+                    info.notifyLeave(engine, this);
+                } finally {
+                    info.leaveInternal(prev);
+                }
             }
 
             if (!closed && !cancelling && !invalid && !interrupting) {
